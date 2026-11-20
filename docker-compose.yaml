@@ -1,0 +1,93 @@
+services: 
+  erp-postgres:
+    image: postgres:16
+    container_name: nilesupply-erp-postgres
+
+    environment:
+      POSTGRES_USER: ${ERP_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${ERP_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ERP_POSTGRES_DB}
+    ports:
+      - "${ERP_POSTGRES_PORT:-5432}:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_wal_senders=4"
+      - "-c"
+      - "max_replication_slots=4"
+    volumes:
+      - erp_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ERP_POSTGRES_USER} -d ${ERP_POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nilesupply-net
+
+  metadata_postgres:
+    image: postgres:16
+    container_name: nilesupply-metadata-postgres
+
+    environment:
+      POSTGRES_USER: ${META_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${META_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${META_POSTGRES_DB}
+    ports:
+      - "${META_POSTGRES_PORT:-5433}:5432"
+
+    volumes:
+      - metadata_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${META_POSTGRES_USER} -d ${META_POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nilesupply-net
+
+      
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    container_name: nilesupply-minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    command: ["server", "/data", "--console-address", ":9001"]
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nilesupply-net
+    
+
+  minio-init:
+    image: cgr.dev/chainguard/minio-client:latest
+    container_name: nilesupply-minio-init
+    environment:
+      MC_HOST_local: http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@minio:9000
+    command: ["mb", "--ignore-existing", "local/${MINIO_BUCKET_NAME}"]
+    restart: "on-failure"
+    depends_on:
+      - minio
+    networks:
+      - nilesupply-net
+
+
+volumes:
+  erp_postgres_data:
+  metadata_postgres_data:
+  minio_data:
+
+networks:
+  nilesupply-net:
+    driver: bridge
