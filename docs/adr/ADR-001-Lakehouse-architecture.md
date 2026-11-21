@@ -4,7 +4,7 @@
     Accepted
 
 ## Context
-    NileSupply Global needs a scalable storge architecture to manage approximtely 
+    SupplyChain Platform needs a scalable storge architecture to manage approximtely 
         100 million historical records and future data changes 
 
     the system needs to suuport :

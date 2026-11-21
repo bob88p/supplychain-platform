@@ -1,4 +1,4 @@
-# NileSupply Global — End-to-End Supply Chain Data Platform
+# SupplyChain Platform — End-to-End Supply Chain Data Platform
 Production-style data engineering platform implementing reliable CDC (PostgreSQL WAL -> Debezium -> Kafka -> Python Consumer -> MinIO Bronze), Lakehouse storage (Apache Iceberg + Nessie), Spark & dbt/Trino transformations, Airflow orchestration, Great Expectations quality gates, Prometheus/Grafana observability, and Power BI analytics.
 
 ## Repository Structure

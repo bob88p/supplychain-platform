@@ -23,8 +23,8 @@ Deterministic `event_id` formula (random consumer UUIDs are prohibited):
 `event_id = sha256(f"{source_system}:{database_name}:{schema_name}:{table_name}:{order_id}:{lsn}:{operation}")`
 
 ## 5. MinIO Bronze Storage Layout & Metadata Control Plane
-- **Object Path:** `s3://nilesupply/bronze/cdc/source=erp/table=sales_orders/ingest_date=YYYY-MM-DD/partition={kafka_partition:02d}/{event_id}.json`
-- **Metadata PostgreSQL Tables (`nilesupply_meta`):** `processed_events` (`event_id` PK) and `bronze_manifests`.
+- **Object Path:** `s3://supplychain-platform/bronze/cdc/source=erp/table=sales_orders/ingest_date=YYYY-MM-DD/partition={kafka_partition:02d}/{event_id}.json`
+- **Metadata PostgreSQL Tables (`supplychain_platform_meta`):** `processed_events` (`event_id` PK) and `bronze_manifests`.
 
 ## 6. Safe Write & Offset-Commit Sequence
 1. Poll record(s) with `enable.auto.commit=false`.

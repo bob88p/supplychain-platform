@@ -1,7 +1,7 @@
 services: 
   erp-postgres:
     image: postgres:16
-    container_name: nilesupply-erp-postgres
+    container_name: supplychain-platform-erp-postgres
 
     environment:
       POSTGRES_USER: ${ERP_POSTGRES_USER}
@@ -25,11 +25,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - nilesupply-net
+      - supplychain-platform-net
 
   metadata_postgres:
     image: postgres:16
-    container_name: nilesupply-metadata-postgres
+    container_name: supplychain-platform-metadata-postgres
 
     environment:
       POSTGRES_USER: ${META_POSTGRES_USER}
@@ -46,12 +46,12 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - nilesupply-net
+      - supplychain-platform-net
 
       
   minio:
     image: cgr.dev/chainguard/minio:latest
-    container_name: nilesupply-minio
+    container_name: supplychain-platform-minio
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
@@ -67,12 +67,12 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - nilesupply-net
+      - supplychain-platform-net
     
 
   minio-init:
     image: cgr.dev/chainguard/minio-client:latest
-    container_name: nilesupply-minio-init
+    container_name: supplychain-platform-minio-init
     environment:
       MC_HOST_local: http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@minio:9000
     command: ["mb", "--ignore-existing", "local/${MINIO_BUCKET_NAME}"]
@@ -80,7 +80,7 @@ services:
     depends_on:
       - minio
     networks:
-      - nilesupply-net
+      - supplychain-platform-net
 
 
 volumes:
@@ -89,5 +89,5 @@ volumes:
   minio_data:
 
 networks:
-  nilesupply-net:
+  supplychain-platform-net:
     driver: bridge
